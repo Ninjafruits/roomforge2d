@@ -445,12 +445,20 @@ class RoomPlanner(tk.Tk):
     def move_furn(self, e):
         tag = self.selected_item
         if not tag: return
+        self.canvas.bind('<Key>', self.on_key_press) ######################################also here
+        self.canvas.focus_set()
         fid = self.furniture[tag]['id']
         dx = e.x - self.drag_data['x0']; dy = e.y - self.drag_data['y0']
         ox1,oy1,ox2,oy2 = self.drag_data['orig']
         new = [ox1+dx,oy1+dy,ox2+dx,oy2+dy]
         self.canvas.coords(fid,*new)
         self.canvas.coords(self.move_outline,*self.canvas.bbox(fid))
+
+        ################################################################################## editing here
+    def on_key_press(self, event):
+        if event.char.lower() == 'r':
+            self.edit_furn_rotate(self.selected_item)
+            ##############################################################################
 
     def finish_move_furn(self, e=None):
         self.canvas.unbind('<Motion>')
@@ -603,3 +611,7 @@ class RoomPlanner(tk.Tk):
 
 if __name__ == '__main__':
     RoomPlanner().mainloop()
+
+
+
+
