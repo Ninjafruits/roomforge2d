@@ -1,15 +1,21 @@
-Hello, welcome to RoomForge2D! you can find the porgram in the roomforge2d folder
+Hello, welcome to RoomForge2D! 
+
 
 ~~Introduction
 //
-rf2d is a simple room designer to help map layouts for your room before you start moving stuff in
-and finding out your furnitures do not fit.
+RF2D is a simple room designer to help map layouts for your room before you start moving stuff in
+and finding out your furniture does not fit.
+//
+
+~~ Notes: 
+//
+You can find the program in the roomforge2d folder, as well as a distribution. exe file if you just wish to run it.
 //
 
 ~~Version
 //
-This is in alpha stage, so expect bugs and missing features. however, it bares a functional application to layout.
-This could also serve as a very basic game map editor, but it is not intended for that purpose.
+This is in alpha stage, so expect bugs and missing features. However, it bears a functional application to layout.
+This could also serve as a very basic game map editor, but it is not intended for that purpose. ONLY COMPATIBLE WITH WINDOWS
 //
 
 ~~Program features
