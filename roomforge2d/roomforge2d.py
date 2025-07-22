@@ -89,8 +89,11 @@ class RoomPlanner(tk.Tk):
         self.status.pack(side='bottom', fill='x')
 
         # Global bindings
-        self.bind('<Escape>',    lambda e: self.reset_draw())
-        self.bind('<Control-z>', lambda e: self.undo_action())
+        self.bind_all('<Escape>',    lambda e: self.reset_draw())
+        self.bind_all('<Control-z>', lambda e: self.undo_action())
+
+        #focus window
+        self.after(100, lambda: (self.focus_force(), self.canvas.focus_set()))
 
     # --- Preview vs. Draw Cleanup ---
     def clear_preview(self):
@@ -134,6 +137,8 @@ class RoomPlanner(tk.Tk):
             self.canvas.bind('<Button-1>', self.place_furniture)
         elif mode == 'select':
             self.canvas.bind('<Button-1>', self.select_item)
+
+        self.canvas.focus_set()
 
     # --- Zoom ---
     def zoom_in(self):  self._zoom(ZOOM_STEP)
