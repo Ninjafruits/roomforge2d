@@ -51,6 +51,7 @@ class RoomPlanner(tk.Tk):
         self.furniture       = {}  # tag -> {'id','name','shape','w','h','d','angle'}
         self.actions         = []
         self.new_item        = None
+        self.wall_tag_map    = {}  # map wall tags to indices
 
         # Move/drag state
         self.selected_window = None
@@ -65,7 +66,7 @@ class RoomPlanner(tk.Tk):
             ('Draw Room',     lambda: self.set_mode('draw')),
             ('Undo',          self.undo_action),
             ('Clear Room',    self.clear_room),
-            ('Delete Wall',   lambda: self.set_mode('delete_wall')),
+            #('Delete Wall',   lambda: self.set_mode('delete_wall')),
             ('Add Window',    lambda: self.set_mode('add_window')),
             ('Add Furniture', self.prepare_furniture),
             ('Select/Edit',   lambda: self.set_mode('select')),
@@ -93,6 +94,7 @@ class RoomPlanner(tk.Tk):
         self.bind_all('<Control-z>', lambda e: self.undo_action())
 
         #focus window
+        "tells focus is in main window = mostly for bind while in draw mode"
         self.after(100, lambda: (self.focus_force(), self.canvas.focus_set()))
 
     # --- Preview vs. Draw Cleanup ---
@@ -245,6 +247,32 @@ class RoomPlanner(tk.Tk):
                     elif act=='delete':
                         self._undo_wall()
                     return
+    
+    def delete_wall_by_index(self, idx):
+        if idx < 0 or idx >= len(self.wall_lines):
+            print(f"[WARNING] Tried to delete wall with invalid index: {idx}")
+            return
+
+        # delete the wall and label from canvas
+        line_id = self.wall_lines[idx]
+        label_id = self.wall_labels[idx]
+        if line_id:  self.canvas.delete(line_id)
+        if label_id: self.canvas.delete(label_id)
+
+        # emove from internal lists
+        del self.wall_lines[idx]
+        del self.wall_labels[idx]
+        if len(self.points) > idx + 1:
+            del self.points[idx + 1]
+
+        # re-tag remaining walls
+        for i, line_id in enumerate(self.wall_lines):
+            if line_id:
+                self.canvas.itemconfig(line_id, tags=(f'wall{i}', 'wall'))
+        for i, label_id in enumerate(self.wall_labels):
+            if label_id:
+                self.canvas.itemconfig(label_id, tags=(f'wall{i}', 'wall'))
+
 
     def start_wall_move(self, idx, e):
         line_id = self.wall_lines[idx]
@@ -296,16 +324,19 @@ class RoomPlanner(tk.Tk):
             for t in self.canvas.gettags(item):
                 if t.startswith('wall'):
                     idx = int(t[4:])
-                    # guard against invalid wall index
                     if idx < 0 or idx >= len(self.wall_lines) or self.wall_lines[idx] is None:
                         continue
                     length = simpledialog.askfloat('Add Window','Length (ft):',parent=self)
                     if length is None: return
-                    self._place_window(idx,e.x,e.y,length)
-                    self.actions.append({'type':'window','tag':f'window{len(self.windows)}'})
+
+                    
+                    wtag = f'window{len(self.windows)}'
+                    self._place_window(idx, e.x, e.y, length, wtag)
+                    self.actions.append({'type': 'window', 'tag': wtag})
                     return
 
-    def _place_window(self, idx, mx, my, length):
+
+    def _place_window(self, idx, mx, my, length, wtag):
         # guard against invalid wall index
         if idx < 0 or idx >= len(self.wall_lines) or self.wall_lines[idx] is None:
             return
@@ -374,7 +405,7 @@ class RoomPlanner(tk.Tk):
         self.drag_data = {}
 
     # --- Furniture ---
-    def prepare_furniture(self):
+    def prepare_furniture(self): #this makes the firnutires
         name = simpledialog.askstring('Furniture','Enter name:',parent=self)
         if not name: return
         dlg  = OptionDialog(self,'Shape','Select shape:',
@@ -545,17 +576,19 @@ class RoomPlanner(tk.Tk):
     def select_item(self, e):
         items = self.canvas.find_overlapping(e.x-3,e.y-3,e.x+3,e.y+3)
         if not items: return
-        tags = self.canvas.gettags(items[-1])
+        clicked_item = items[-1]  # last item is the topmost
+        tags = self.canvas.gettags(clicked_item)
 
-        # Window first
+        # Window
         for t in tags:
             if t.startswith('window'):
                 return self.edit_window(e, t)
 
-        # Furniture next
+        # Furniture
         for t in tags:
-            if t.startswith('furn'):
-                info = self.furniture[t]
+            if t.startswith('furn') and t in self.furniture:
+                tag = t
+                info = self.furniture[tag]
                 dlg = OptionDialog(self,'Furniture','Action:',[
                     ('move','Move'),
                     ('rotate','Rotate'),
@@ -601,7 +634,12 @@ class RoomPlanner(tk.Tk):
         # Walls fallback
         for t in tags:
             if t.startswith('wall'):
-                idx = int(t[4:])
+                try:
+                    idx = self.wall_lines.index(clicked_item)
+                except ValueError:
+                    idx = int(t[4:])
+
+
                 dlg = OptionDialog(self,'Wall','Action:',[
                     ('move','Move'),('resize','Resize'),('delete','Delete')
                 ])
@@ -611,7 +649,7 @@ class RoomPlanner(tk.Tk):
                 elif act=='resize':
                     self.edit_wall(self.wall_lines[idx])
                 elif act=='delete':
-                    self._undo_wall()
+                    self.delete_wall_by_index(idx)
                 return
 
 if __name__ == '__main__':
