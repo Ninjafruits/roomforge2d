@@ -1,5 +1,5 @@
 Hello, welcome to RoomForge2D! 
-
+Updates and their logs are in branches labeled respectively
 
 ~~Introduction
 //
