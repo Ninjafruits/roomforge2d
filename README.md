@@ -7,6 +7,16 @@ RF2D is a simple room designer to help map layouts for your room before you star
 and finding out your furniture does not fit.
 //
 
+~~Features Wall Drawing
+//
+Click to define room boundaries. Hold Shift to enforce straight lines.
+Window Placement: Snap windows to wall segments with customizable sizes.
+Furniture: Add circular or rectangular furniture with drag, rotate (R key while dragging), and resize capabilities.
+Zooming and Panning: Zoom in/out for precision. Middle-click (mouse button 2) and drag to pan.
+Undo / Clear: Undo recent actions or reset the canvas.
+Intuitive Editing: Context-sensitive right-click-style options via left-click menu for each item.
+//
+
 ~~ Notes: 
 //
 You can find the program in the roomforge2d folder, as well as a distribution. exe file if you just wish to run it.
