@@ -76,7 +76,7 @@ class RoomPlanner(tk.Tk):
         tk.Button(tb, text='Zoom Out', command=self.zoom_out).pack(fill='x', pady=2)
 
         #message:
-        messagebox.showinfo("Welcome to RoomForge2D!", f"I love you and hope this helps a little \nRemember: Hold shift to make a straight line during wall building and press enter when moving furniture/window")
+        messagebox.showinfo("Welcome to RoomForge2D!", f"\nRemember: Hold shift to make a straight line during wall building and press enter when moving furniture/window")
 
         # Canvas
         self.canvas = tk.Canvas(self, bg='white')
