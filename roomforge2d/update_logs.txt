@@ -1,0 +1,14 @@
+//Update log//
+
+Added rotate in move funiture mode using the 'R' key
+
+updated of place window and add window being mislpaced with tag BEFORE placing window which caused an issue
+if not being able to undo window
+
+retagged wall deletion due to index being out of bounds whihc prevented walls from being deleted after 4 deletes
+delete_wall_by_ind now retags the wall with the correct tag
+
+made readme it into update logs for readability
+
+
+//bugs//
