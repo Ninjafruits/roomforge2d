@@ -1,4 +1,6 @@
-﻿import tkinter as tk
+﻿
+import tkinter as tk
+import ttkbootstrap as ttkb
 from tkinter import simpledialog, messagebox
 import math
 
@@ -7,6 +9,7 @@ BASE_SCALE = 40      # pixels per foot
 ZOOM_STEP   = 1.2
 MIN_ZOOM    = 0.5
 MAX_ZOOM    = 5.0
+
 
 # Dialogs
 class OptionDialog(tk.Toplevel):
@@ -35,12 +38,13 @@ class OptionDialog(tk.Toplevel):
 class RoomPlanner(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title('RoomForge2d version 1.0')
+        self.style = ttkb.Style('minty')  # Set a default theme
+        self.title('RoomForge2d version 1.1')
         self.geometry('900x600')
         self.state('zoomed')  # start maximized
 
         # State
-        self.zoom            = 1.0
+        self.zoom            = 1
         self.mode            = None
         self.points          = []
         self.wall_lines      = []
@@ -60,8 +64,8 @@ class RoomPlanner(tk.Tk):
         self.move_outline    = None
 
         # Toolbar
-        tb = tk.Frame(self, padx=5, pady=5)
-        tb.pack(side='left', fill='y')
+        tb = ttkb.Frame(self, bootstyle='light')
+        tb.pack(side='left', fill='y',padx=5, pady=5)
         for text, cmd in [
             ('Draw Room',     lambda: self.set_mode('draw')),
             ('Undo',          self.undo_action),
@@ -71,9 +75,10 @@ class RoomPlanner(tk.Tk):
             ('Add Furniture', self.prepare_furniture),
             ('Select/Edit',   lambda: self.set_mode('select')),
         ]:
-            tk.Button(tb, text=text, command=cmd).pack(fill='x', pady=2)
-        tk.Button(tb, text='Zoom In',  command=self.zoom_in).pack(fill='x', pady=2)
-        tk.Button(tb, text='Zoom Out', command=self.zoom_out).pack(fill='x', pady=2)
+           ttkb.Button(tb, bootstyle='info-outline',text=text, command=cmd).pack(fill='x', pady=2)
+
+        ttkb.Button(tb, bootstyle='info-outline', text='Zoom In',  command=self.zoom_in).pack(fill='x', pady=2)
+        ttkb.Button(tb, bootstyle='info-outline',text='Zoom Out', command=self.zoom_out).pack(fill='x', pady=2)
 
         #message:
         messagebox.showinfo("Welcome to RoomForge2D!", f"\nRemember: \nHold shift to make a straight line during wall building \nPress enter when placing down furniture/window")
@@ -451,8 +456,8 @@ class RoomPlanner(tk.Tk):
         name = self.furniture[tag]['name']
         self.tip = tk.Toplevel(self); self.tip.overrideredirect(True)
         self.tip.geometry(f'+{e.x_root+10}+{e.y_root+10}')
-        tk.Label(self.tip, text=name, bg='yellow', bd=1, relief='solid').pack()
-
+        #tk.Label(self.tip, text=name, bg='yellow', bd=1, relief='solid').pack()
+        ttkb.Label(self.tip, text=name, bootstyle='info-inverse').pack()
     def hide_tooltip(self):
         if hasattr(self,'tip'): self.tip.destroy()
 
